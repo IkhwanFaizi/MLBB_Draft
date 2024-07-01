@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drafting UI</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative; /* Ensure animation works correctly */
+        }
+        
+        .left-gradient, .right-gradient {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            background-size: 400% 400%;
+            background-clip: text;
+            animation: gradient 15s ease infinite;
+            z-index: -1; /* Ensure the gradients are behind content */
+        }
+
+        .left-gradient {
+            left: 0;
+            background: linear-gradient(-45deg, #008CBA, #008CBA, #23a6d5, #23d5ab);
+        }
+
+        .right-gradient {
+            right: 0;
+            background: linear-gradient(-45deg, #D32F2F, #D32F2F, #e73c7e, #ee7752);
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 50%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200vh;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .match-id {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .teams {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 100%;
+            color: #f5f1f1;
+        }
+        
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            margin: 20px;
+            padding: 20px;
+            background-color: #1e1e1e; /* Dark background for team box */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for depth */
+            border: 2px solid; /* Team border (blue or red) */
+        }
+        
+        .blue-team {
+            border-color: #00bfff; /* Blue team border color */
+        }
+
+        .red-team {
+            border-color: #ff4500; /* Red team border color */
+        }
+
+        .team input[type="text"] {
+            width: 150px;
+            margin-bottom: 10px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .bans-picks {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 10px;
+            width: 100%;
+            justify-items: center;
+        }
+
+        .ban-pick-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bans input, .picks input, .pick-details input {
+            margin: 5px;
+            width: 80px;
+            padding: 5px;
+            text-align: center;
+            background-color: #f8f5f5; 
+            color: #000000; 
+            border: 1px solid #666; /* Border color */
+        }
+
+        .pick-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #000;
+            width: 120px;
+            background-color: #1e1e1e; /* Dark background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
+        }
+
+        .pick-details .hero-picture {
+            width: 100px;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid #000;
+            margin-bottom: 5px;
+            background-color: #333; /* Darker background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
+        }
+
+        .pick-details select.pick-role {
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 14px;
+            background-color: #555; /* Darker background for dropdowns */
+            color: #fff; /* White text */
+            border: 1px solid #777; /* Border color */
+            border-radius: 5px;
+        }
+
+        .pick-details select.pick-role option {
+            background-color: #555; /* Darker background for dropdown options */
+            color: #fff; /* White text */
+            border: none;
+        }
+
+        .winning-team {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .winning-team input[type="text"], .winning-team button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+            text-align: center;
+        }
+
+        h2 {
+            margin: 10px 0;
+        }
+
+        #match-id {
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-gradient"></div>
+    <div class="right-gradient"></div>
+    <div class="d-flex flex-column justify-content-center w-100 h-100"></div>
+    <div class="container">
+        <div class="match-id">
+            <label for="match-id">Match ID:</label>
+            <input type="text" id="match-id" placeholder="Input Match ID">
+        </div>
+        <div class="teams">
+            <div class="team blue-team">
+                <h2>Blue Team</h2>
+                <input type="text" id="blue-team-name" placeholder="Input Blue Team Name">
+                <div class="bans-picks">
+                    <div class="ban-pick-group">
+                        <input type="text" id="blue-team-ban-1" placeholder="1st Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="blue-team-pick-picture-1"></div>
+                            <input type="text" id="blue-team-pick-1" placeholder="1st Pick">
+                            <select id="blue-team-pick-role-1" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="blue-team-ban-2" placeholder="2nd Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="blue-team-pick-picture-2"></div>
+                            <input type="text" id="blue-team-pick-2" placeholder="2nd Pick">
+                            <select id="blue-team-pick-role-2" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="blue-team-ban-3" placeholder="3rd Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="blue-team-pick-picture-3"></div>
+                            <input type="text" id="blue-team-pick-3" placeholder="3rd Pick">
+                            <select id="blue-team-pick-role-3" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="blue-team-ban-4" placeholder="4th Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="blue-team-pick-picture-4"></div>
+                            <input type="text" id="blue-team-pick-4" placeholder="4th Pick">
+                            <select id="blue-team-pick-role-4" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="blue-team-ban-5" placeholder="5th Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="blue-team-pick-picture-5"></div>
+                            <input type="text" id="blue-team-pick-5" placeholder="5th Pick">
+                            <select id="blue-team-pick-role-5" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="team red-team">
+                <h2>Red Team</h2>
+                <input type="text" id="red-team-name" placeholder="Input Red Team Name">
+                <div class="bans-picks">
+                    <div class="ban-pick-group">
+                        <input type="text" id="red-team-ban-5" placeholder="5th Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="red-team-pick-picture-5"></div>
+                            <input type="text" id="red-team-pick-5" placeholder="5th Pick">
+                            <select id="red-team-pick-role-5" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="red-team-ban-4" placeholder="4th Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="red-team-pick-picture-4"></div>
+                            <input type="text" id="red-team-pick-4" placeholder="4th Pick">
+                            <select id="red-team-pick-role-4" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="red-team-ban-3" placeholder="3rd Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="red-team-pick-picture-3"></div>
+                            <input type="text" id="red-team-pick-3" placeholder="3rd Pick">
+                            <select id="red-team-pick-role-3" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="red-team-ban-2" placeholder="2nd Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="red-team-pick-picture-2"></div>
+                            <input type="text" id="red-team-pick-2" placeholder="2nd Pick">
+                            <select id="red-team-pick-role-2" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-pick-group">
+                        <input type="text" id="red-team-ban-1" placeholder="1st Ban">
+                        <div class="pick-details">
+                            <div class="hero-picture" id="red-team-pick-picture-1"></div>
+                            <input type="text" id="red-team-pick-1" placeholder="1st Pick">
+                            <select id="red-team-pick-role-1" class="pick-role">
+                                <option value="">Select Role</option>
+                                <option value="Gold Laner">Gold Laner</option>
+                                <option value="Roamer">Roamer</option>
+                                <option value="Mid Laner">Mid Laner</option>
+                                <option value="Jungler">Jungler</option>
+                                <option value="Exp Laner">Exp Laner</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="winning-team">
+            <label for="winning-team">Winning Team:</label>
+            <input type="text" id="winning-team" placeholder="Input Winning Team">
+            <button type="button">Submit</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            // Define MLBB heroes (replace with actual hero names)
+            var mlbbHeroes = [
+                "Aamon", "Akai", "Aldous", "Alice", "Alpha", "Alucard", "Angela", "Argus", "Arlott", "Atlas", "Aulus", "Aurora",
+                "Badang", "Balmond", "Bane", "Barats", "Baxia", "Beatrix", "Belerick",
+                "Benedetta", "Brody", "Bruno", "Carmilla", "Cecilion", "Chang'e", 
+                "Chip", "Chou", "Cici", "Claude", "Clint", "Cyclops", "Diggie", "Dyrroth", "Edith", "Esmeralda", 
+                "Estes", "Eudora", "Fanny", "Faramis", "Floryn", "Franco", "Fredrinn", "Freya", "Gatotkaca", "Gloo",
+                "Gord", "Granger", "Grock", "Guinevere", "Gusion", "Hanabi", "Hanzo", "Harith", "Harley",
+                "Hayabusa", "Helcurt", "Hilda", "Hylos", "Irithel", "Ixia", "Jawhead", "Johnson",
+                "Joy", "Julian", "Kadita", "Kagura", "Kaja", "Karina", "Karrie", "Khaleed", "Khufra", "Kimmy", "Lancelot", 
+                "Lapu-Lapu", "Layla", "Leomord", "Lesley", "Ling", "Lolita", "Lunox", "Luo Yi",
+                "Lylia", "Martis", "Masha", "Mathilda", "Melissa", "Minotaur", "Minsitthar", "Miya", "Moskov", "Nana", "Natalia",
+                "Natan", "Nolan", "Novaria", "Odette", "Paquito", "Pharsa", "Phoveus", "Popol and Kupa", "Rafaela", "Roger", 
+                "Ruby", "Saber", "Selena", "Silvanna", "Sun", "Terizla", "Thamuz", "Tigreal", "Uranus", "Vale", "Valentina", "Valir",
+                "Vexana", "Wanwan", "X.Borg", "Xavier", "Yi Sun-Shin", "Yin", "Yu Zhong", "Yve", "Zhask", "Zhuxin", "Zilong" 
+                // Add more heroes as needed
+            ];
+
+            // Function to initialize autocomplete for a given input element
+            function setupAutocomplete(inputId, pictureId) {
+                $('#' + inputId).autocomplete({
+                    source: function(request, response) {
+                        var term = request.term.toLowerCase();
+                        var filtered = mlbbHeroes.filter(function(hero) {
+                            return hero.toLowerCase().indexOf(term) === 0;
+                        });
+                        response(filtered);
+                    },
+                    select: function(event, ui) {
+                        var selectedHero = ui.item.value;
+                        if (mlbbHeroImages[selectedHero]) {
+                            $('#' + pictureId).css('background-image', 'url(' + mlbbHeroImages[selectedHero] + ')');
+                        }
+                    }
+                });
+            }
+        
+            // Setup autocomplete for all relevant inputs
+            setupAutocomplete('blue-team-ban-1');
+            setupAutocomplete('blue-team-ban-2');
+            setupAutocomplete('blue-team-ban-3');
+            setupAutocomplete('blue-team-ban-4');
+            setupAutocomplete('blue-team-ban-5');
+            setupAutocomplete('blue-team-pick-1', 'blue-team-pick-picture-1');
+            setupAutocomplete('blue-team-pick-2', 'blue-team-pick-picture-2');
+            setupAutocomplete('blue-team-pick-3', 'blue-team-pick-picture-3');
+            setupAutocomplete('blue-team-pick-4', 'blue-team-pick-picture-4');
+            setupAutocomplete('blue-team-pick-5', 'blue-team-pick-picture-5');
+        
+            setupAutocomplete('red-team-ban-5');
+            setupAutocomplete('red-team-ban-4');
+            setupAutocomplete('red-team-ban-3');
+            setupAutocomplete('red-team-ban-2');
+            setupAutocomplete('red-team-ban-1');
+            setupAutocomplete('red-team-pick-5', 'red-team-pick-picture-5');
+            setupAutocomplete('red-team-pick-4', 'red-team-pick-picture-4');
+            setupAutocomplete('red-team-pick-3', 'red-team-pick-picture-3');
+            setupAutocomplete('red-team-pick-2', 'red-team-pick-picture-2');
+            setupAutocomplete('red-team-pick-1', 'red-team-pick-picture-1');
+            
+
+            // Function to initialize role dropdowns
+            function setupRoleDropdowns() {
+                $('.pick-role').selectmenu();
+
+            // Call setupRoleDropdowns function
+            setupRoleDropdowns();
+            }
+            
+            // Define MLBB hero images (replace with actual image URLs)
+            var mlbbHeroImages = {
+                "Aamon": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Aamon.jpg",
+                "Akai": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Akai.jpg",
+                "Aldous": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Aldous.jpg",
+                "Alice": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Alice.jpg",
+                "Alpha": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Alpha.jpg",
+                "Alucard": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Alucard.jpg",
+                "Angela": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Angela.jpg",
+                "Argus": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Argus.jpg",
+                "Arlott": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Arlott.jpg",
+                "Atlas": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Atlas.jpg",
+                "Aulus": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Aulus.jpg",
+                "Aurora": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Aurora.jpg",
+                "Badang": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Badang.jpg",
+                "Balmond": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Balmond.jpg",
+                "Bane": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Bane.jpg",
+                "Barats": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Barats.jpg",
+                "Baxia": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Baxia.jpg",
+                "Beatrix": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Beatrix.jpg",
+                "Belerick": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Belerick.jpg",
+                "Benedetta": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Benedetta.jpg",
+                "Brody": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Brody.jpg",
+                "Bruno": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Bruno.jpg",
+                "Carmilla": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Carmilla.jpg",
+                "Cecilion": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Cecilion.jpg",
+                "Chang'e": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Chang'e.jpg",
+                "Chip": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Chip.jpg",
+                "Chou": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Chou.jpg",
+                "Cici": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Cici.jpg",
+                "Claude": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Claude.jpg",
+                "Clint": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Clint.jpg",
+                "Cyclops": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Cyclops.jpg",
+                "Diggie": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Diggie.jpg",
+                "Dyrroth": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Dyrroth.jpg",
+                "Edith": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Edith.jpg",
+                "Esmeralda": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Esmeralda.jpg",
+                "Estes": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Estes.jpg",
+                "Eudora": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Eudora.jpg",
+                "Fanny": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Fanny.jpg",
+                "Faramis": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Faramis.jpg",
+                "Floryn": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Floryn.jpg",
+                "Franco": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Franco.jpg",
+                "Fredrinn": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Fredrinn.jpg",
+                "Freya": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Freya.jpg",
+                "Gatotkaca": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Gatotkaca.jpg",
+                "Gloo": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Gloo.jpg",
+                "Gord": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Gord.jpg",
+                "Granger": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Granger.jpg",
+                "Grock": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Grock.jpg",
+                "Guinevere": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Guinevere.jpg",
+                "Gusion": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Gusion.jpg",
+                "Hanabi": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Hanabi.jpg",
+                "Hanzo": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Hanzo.jpg",
+                "Harith": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Harith.jpg",
+                "Harley": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Harley.jpg",
+                "Hayabusa": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Hayabusa.jpg",
+                "Helcurt": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Helcurt.jpg",
+                "Hilda": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Hilda.jpg",
+                "Hylos": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Hylos.jpg",
+                "Irithel": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Irithel.jpg",
+                "Ixia": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Ixia.jpg",
+                "Jawhead": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Jawhead.jpg",
+                "Johnson": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Johnson.jpg",
+                "Joy": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Joy.jpg",
+                "Julian": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Julian.jpg",
+                "Kadita": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Kadita.jpg",
+                "Kagura": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Kagura.jpg",
+                "Kaja": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Kaja.jpg",
+                "Karina": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Karina.jpg",
+                "Karrie": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Karrie.jpg",
+                "Khaleed": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Khaleed.jpg",
+                "Khufra": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Khufra.jpg",
+                "Kimmy": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Kimmy.jpg",
+                "Lancelot": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Lancelot.jpg",
+                "Lapu-Lapu": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Lapu-Lapu.jpg",
+                "Layla": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Layla.jpg",
+                "Leomord": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Leomord.jpg",
+                "Lesley": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Lesley.jpg",
+                "Ling": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Ling.jpg",
+                "Lolita": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Lolita.jpg",
+                "Lunox": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Lunox.jpg",
+                "Luo Yi": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Luo%20Yi.jpg",
+                "Lylia": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Lylia.jpg",
+                "Martis": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Martis.jpg",
+                "Masha": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Masha.jpg",
+                "Mathilda": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Mathilda.jpg",
+                "Melissa": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Melissa.jpg",
+                "Minotaur": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Minotaur.jpg",
+                "Minsitthar": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Minsitthar.jpg",
+                "Miya": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Miya.jpg",
+                "Moskov": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Moskov.jpg",
+                "Nana": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Nana.jpg",
+                "Natalia": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Natalia.jpg",
+                "Natan": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Natan.jpg",
+                "Nolan": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Nolan.jpg",
+                "Novaria": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Novaria.jpg",
+                "Odette": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Odette.jpg",
+                "Paquito": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Paquito.jpg",
+                "Pharsa": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Pharsa.jpg",
+                "Phoveus": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Phoveus.jpg",
+                "Popol and Kupa": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Popol%20and%20Kupa.jpg",
+                "Rafaela": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Rafaela.jpg",
+                "Roger": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Roger.jpg",
+                "Ruby": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Ruby.jpg",
+                "Saber": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Saber.jpg",
+                "Selena": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Selena.jpg",
+                "Silvanna": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Silvanna.jpg",
+                "Sun": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Sun.jpg",
+                "Terizla": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Terizla.jpg",
+                "Thamuz": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Thamuz.jpg",
+                "Tigreal": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Tigreal.jpg",
+                "Uranus": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Uranus.jpg",
+                "Vale": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Vale.jpg",
+                "Valentina": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Valentina.jpg",
+                "Valir": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Valir.jpg",
+                "Vexana": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Vexana.jpg",
+                "Wanwan": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Wanwan.jpg",
+                "X.Borg": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/X.Borg.jpg",
+                "Xavier": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Xavier.jpg",
+                "Yi Sun-Shin": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Yi%20Sun-Shin.jpg",
+                "Yin": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Yin.jpg",
+                "Yu Zhong": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Yu%20Zhong.jpg",
+                "Yve": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Yve.jpg",
+                "Zhask": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Zhask.jpg",
+                "Zhuxin": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Zhuxin.jpg",
+                "Zilong": "file:///C:/Users/PC/OneDrive/Desktop/MLBB%20Draft%20Projects%20File/Zilong.jpg",
+                // Add more hero images as needed
+            };
+            
+
+            // Function to clear hero pictures
+            function clearHeroPictures() {
+                $('.hero-picture').css('background-image', 'none');
+            };
+
+            // Function to gather input values
+            function getInputValues() {
+                return {
+                    matchId: $('#match-id').val(),
+                    blueTeamName: $('#blue-team-name').val(),
+                    redTeamName: $('#red-team-name').val(),
+                    blueTeamBan1: $('#blue-team-ban-1').val(),
+                    redTeamBan1: $('#red-team-ban-1').val(),
+                    blueTeamBan2: $('#blue-team-ban-2').val(),
+                    redTeamBan2: $('#red-team-ban-2').val(),
+                    blueTeamBan3: $('#blue-team-ban-3').val(),
+                    redTeamBan3: $('#red-team-ban-3').val(),
+                    blueTeamPick1: $('#blue-team-pick-1').val(),
+                    roleBlueTeamPick1: $('#blue-team-pick-role-1').val(),
+                    redTeamPick1: $('#red-team-pick-1').val(),
+                    roleRedTeamPick1: $('#red-team-pick-role-1').val(),
+                    redTeamPick2: $('#red-team-pick-2').val(),
+                    roleRedTeamPick2: $('#red-team-pick-role-2').val(),
+                    blueTeamPick2: $('#blue-team-pick-2').val(),
+                    roleBlueTeamPick2: $('#blue-team-pick-role-2').val(),
+                    blueTeamPick3: $('#blue-team-pick-3').val(),
+                    roleBlueTeamPick3: $('#blue-team-pick-role-3').val(),
+                    redTeamPick3: $('#red-team-pick-3').val(),
+                    roleRedTeamPick3: $('#red-team-pick-role-3').val(),
+                    redTeamBan4: $('#red-team-ban-4').val(),
+                    blueTeamBan4: $('#blue-team-ban-4').val(),
+                    redTeamBan5: $('#red-team-ban-5').val(),
+                    blueTeamBan5: $('#blue-team-ban-5').val(),
+                    redTeamPick4: $('#red-team-pick-4').val(),
+                    roleRedTeamPick4: $('#red-team-pick-role-4').val(),
+                    blueTeamPick4: $('#blue-team-pick-4').val(),
+                    roleBlueTeamPick4: $('#blue-team-pick-role-4').val(),
+                    blueTeamPick5: $('#blue-team-pick-5').val(),
+                    roleBlueTeamPick5: $('#blue-team-pick-role-5').val(),
+                    redTeamPick5: $('#red-team-pick-5').val(),
+                    roleRedTeamPick5: $('#red-team-pick-role-5').val(),
+                    winningTeam: $('#winning-team').val()
+                };
+            };
+
+            // Click event handler for the "Load" button
+            $('button').click(function() {
+                var data = {
+                    "Match ID": $('#match-id').val(),
+                    "Blue Team Name": $('#blue-team-name').val(),
+                    "Red Team Name": $('#red-team-name').val(),
+                    "Blue Team 1st Ban": $('#blue-team-ban-1').val(),
+                    "Red Team 1st Ban": $('#red-team-ban-1').val(),
+                    "Blue Team 2nd Ban": $('#blue-team-ban-2').val(),
+                    "Red Team 2nd Ban": $('#red-team-ban-2').val(),
+                    "Blue Team 3rd Ban": $('#blue-team-ban-3').val(),
+                    "Red Team 3rd Ban": $('#red-team-ban-3').val(),
+                    "Blue Team 4th Ban": $('#blue-team-ban-4').val(),
+                    "Red Team 4th Ban": $('#red-team-ban-4').val(),
+                    "Blue Team 5th Ban": $('#blue-team-ban-5').val(),
+                    "Red Team 5th Ban": $('#red-team-ban-5').val(),
+                    "Blue Team 1st Pick": $('#blue-team-pick-1').val(),
+                    "Role Blue Team 1st Pick": $('#blue-team-pick-role-1').val(),
+                    "Red Team 1st Pick": $('#red-team-pick-1').val(),
+                    "Role Red Team 1st Pick": $('#red-team-pick-role-1').val(),
+                    "Blue Team 2nd Pick": $('#blue-team-pick-2').val(),
+                    "Role Blue Team 2nd Pick": $('#blue-team-pick-role-2').val(),
+                    "Red Team 2nd Pick": $('#red-team-pick-2').val(),
+                    "Role Red Team 2nd Pick": $('#red-team-pick-role-2').val(),
+                    "Blue Team 3rd Pick": $('#blue-team-pick-3').val(),
+                    "Role Blue Team 3rd Pick": $('#blue-team-pick-role-3').val(),
+                    "Red Team 3rd Pick": $('#red-team-pick-3').val(),
+                    "Role Red Team 3rd Pick": $('#red-team-pick-role-3').val(),
+                    "Blue Team 4th Pick": $('#blue-team-pick-4').val(),
+                    "Role Blue Team 4th Pick": $('#blue-team-pick-role-4').val(),
+                    "Red Team 4th Pick": $('#red-team-pick-4').val(),
+                    "Role Red Team 4th Pick": $('#red-team-pick-role-4').val(),
+                    "Blue Team 5th Pick": $('#blue-team-pick-5').val(),
+                    "Role Blue Team 5th Pick": $('#blue-team-pick-role-5').val(),
+                    "Red Team 5th Pick": $('#red-team-pick-5').val(),
+                    "Role Red Team 5th Pick": $('#red-team-pick-role-5').val(),
+                    "Winning Team": $('#winning-team').val()
+                };
+
+            // AJAX request to save data to the server
+            $('button').off('click').on('click',function() {
+                event.preventDefault();
+                const data = getInputValues();
+
+                $.ajax({
+                    url: 'http://localhost:3000/saveData',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        alert('Data saved successfully');
+                        $('input[type="text"]').val(''); // Clear all inputs
+                        $('select[class="pick-role"]').val('');
+                        clearHeroPictures(); // Clear hero pictures
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error); // Log the detailed error
+                        alert('An error occurred while saving data');
+                    }
+                });
+            });
+            })
+        });
+    </script>
+</body>
+</html>
+</body>
+</html>
